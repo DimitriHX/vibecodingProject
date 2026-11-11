@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+/*
+ * FocusFlow design tokens.
+ * Soft pastel palette defined once and exposed as Tailwind utilities
+ * (bg-canvas, text-ink, border-line, bg-primary-soft, ...).
+ */
+@theme {
+  --font-sans: Arial, Helvetica, sans-serif;
+
+  --color-canvas: #f8fafc;
+  --color-canvas-alt: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #eef2f6;
+  --color-line: #e2e8f0;
+
+  --color-primary: #7c9cbf;
+  --color-primary-strong: #4f6f94;
+  --color-primary-soft: #dbeafe;
+
+  --color-sage: #84a98c;
+  --color-sage-strong: #55785d;
+  --color-sage-soft: #dcfce7;
+
+  --color-lavender: #b8a9c9;
+  --color-lavender-soft: #ede9f4;
+  --color-coral: #e8a0a6;
+  --color-coral-soft: #fde2e4;
+  --color-amber-soft: #fef3c7;
+
+  --color-ink: #334155;
+  --color-ink-muted: #64748b;
+}
+
+html {
+  background-color: var(--color-canvas);
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
