@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_rethrow } from "next/navigation";
 import { NextResponse } from "next/server";
 import type { ApiFailure, ApiSuccess } from "@/domain/api";
 import { DomainError, ExternalServiceError, NotFoundError, ValidationError } from "@/domain/errors";
@@ -45,6 +46,8 @@ export function withErrorHandling<Args extends unknown[]>(handler: (...args: Arg
     try {
       return await handler(...args);
     } catch (error) {
+      // Let Next.js internal control-flow errors (prerender bailouts, redirects...) propagate.
+      unstable_rethrow(error);
       return toErrorResponse(error);
     }
   };
