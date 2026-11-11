@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife } from "next/cache";
 import type { Article, ArticleQuery } from "@/domain/article";
-import { ExternalServiceError } from "@/domain/errors";
+import { ExternalServiceError, isDomainError } from "@/domain/errors";
 import type { ArticleProvider } from "./article-provider";
 import { mapDevToArticle, type DevToArticleDto } from "./devto-mapper";
 
@@ -45,7 +45,7 @@ export class DevToArticleProvider implements ArticleProvider {
     try {
       return await fetchDevToArticles(url.toString(), this.config.apiKey, this.config.cacheSeconds);
     } catch (error) {
-      if (error instanceof ExternalServiceError) throw error;
+      if (isDomainError(error)) throw error;
       throw new ExternalServiceError("No se pudo conectar con DEV.to. Inténtalo de nuevo en unos minutos.");
     }
   }

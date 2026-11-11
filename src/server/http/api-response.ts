@@ -2,7 +2,7 @@ import "server-only";
 import { unstable_rethrow } from "next/navigation";
 import { NextResponse } from "next/server";
 import type { ApiFailure, ApiSuccess } from "@/domain/api";
-import { DomainError, ExternalServiceError, NotFoundError, ValidationError } from "@/domain/errors";
+import { isDomainError, ValidationError, type DomainErrorCode } from "@/domain/errors";
 
 export function ok<T>(data: T, init?: ResponseInit) {
   return NextResponse.json<ApiSuccess<T>>({ data }, init);
@@ -16,20 +16,19 @@ export function noContent() {
   return new NextResponse(null, { status: 204 });
 }
 
-function statusFor(error: DomainError): number {
-  if (error instanceof ValidationError) return 400;
-  if (error instanceof NotFoundError) return 404;
-  if (error instanceof ExternalServiceError) return 502;
-  return 500;
-}
+const STATUS_BY_CODE: Record<DomainErrorCode, number> = {
+  VALIDATION_ERROR: 400,
+  NOT_FOUND: 404,
+  EXTERNAL_SERVICE_ERROR: 502,
+};
 
 /** Translates any thrown value into the uniform ApiFailure envelope. */
 export function toErrorResponse(error: unknown) {
-  if (error instanceof DomainError) {
-    const issues = error instanceof ValidationError && Object.keys(error.issues).length > 0 ? error.issues : undefined;
+  if (isDomainError(error)) {
+    const issues = error.issues && Object.keys(error.issues).length > 0 ? error.issues : undefined;
     return NextResponse.json<ApiFailure>(
       { error: { code: error.code, message: error.message, issues } },
-      { status: statusFor(error) },
+      { status: STATUS_BY_CODE[error.code] },
     );
   }
 
